@@ -95,13 +95,13 @@ Esta aplicación usa **congruencias módulo 7**, la **división entera** y los r
 
 | Sección | Qué hace |
 |---|---|
-| 🗓️ **Día de la semana** | Aplica la **congruencia de Zeller** a cualquier fecha y muestra cada paso; lo comprueba con un segundo método. |
-| 📈 **365 ≡ 1 (mod 7)** | Explica por qué cada año la misma fecha cae un día más tarde (dos si hay un 29 de febrero). |
-| 🐣 **Pascua** | Aplica los **algoritmos de Gauss y de Meeus** y explica qué significa cada resto. |
-| ⛪ **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano ↔ gregoriano. |
-| 🎮 **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (método *Doomsday* de Conway). |
-| ✍️ **Ejemplos resueltos** | Los ejemplos hechos a mano en la ficha técnica, para cotejarlos con la app. |
-| ❓ **¿Cómo funciona?** | El fundamento matemático de todo lo anterior. |
+|  **Día de la semana** | Aplica la **congruencia de Zeller** a cualquier fecha y muestra cada paso; lo comprueba con un segundo método. |
+|  **365 ≡ 1 (mod 7)** | Explica por qué cada año la misma fecha cae un día más tarde (dos si hay un 29 de febrero). |
+|  **Pascua** | Aplica los **algoritmos de Gauss y de Meeus** y explica qué significa cada resto. |
+|  **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano ↔ gregoriano. |
+|  **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (método *Doomsday* de Conway). |
+|  **Ejemplos resueltos** | Los ejemplos hechos a mano en la ficha técnica, para cotejarlos con la app. |
+|  **¿Cómo funciona?** | El fundamento matemático de todo lo anterior. |
 
 Usa el menú de la izquierda para navegar.
 """)
