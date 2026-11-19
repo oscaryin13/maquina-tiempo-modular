@@ -97,7 +97,7 @@ Esta aplicación usa **congruencias módulo 7**, la **división entera** y los r
 |---|---|
 |  **Día de la semana** | Aplica la **congruencia de Zeller** a cualquier fecha y muestra cada paso; lo comprueba con un segundo método. |
 |  **365 ≡ 1 (mod 7)** | Explica por qué cada año la misma fecha cae un día más tarde (dos si hay un 29 de febrero). |
-|  **Pascua** | Aplica los **algoritmos de Gauss y de Meeus** y explica qué significa cada resto. |
+|  **Pascua** | Aplica el **algoritmo de Gauss** y explica qué significa cada resto. |
 |  **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano gregoriano. |
 |  **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (método *Doomsday* de Conway). |
 |  **Ejemplos resueltos** | Los ejemplos hechos a mano en la ficha técnica, para cotejarlos con la app. |
@@ -211,7 +211,7 @@ Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero
 
 
 def pagina_pascua():
-    st.header("Fecha de Pascua — algoritmos de Gauss")
+    st.header("Fecha de Pascua — algoritmo de Gauss")
     st.markdown("""
 **Regla (Concilio de Nicea, 325):** la Pascua es el **primer domingo después de la primera luna llena
 que cae el 21 de marzo o después** (equinoccio eclesiástico). Por eso siempre está entre el **22 de marzo y el 25 de abril**.
@@ -227,22 +227,13 @@ El algoritmo usa tres ciclos, cada uno con su resto:
                                           "gregoriano": "Gregoriano (Iglesia católica)",
                                           "juliano": "Juliano (Iglesias ortodoxas)"}[s])
     g = C.pascua_gauss(y, cal)
-    me = C.pascua_meeus(y, cal)
     cal_usado = g.pasos[0].split("calendario ")[1].rstrip(".")
     _, mm, dd = g.valor
     st.success(f"### Domingo de Pascua {y}: **{dd} de {C.MESES[mm - 1]}** (calendario {cal_usado})")
 
-    col1, col2 = st.columns(2)
-    with col1:
-        mostrar_pasos(g.pasos[1:], "Algoritmo de Gauss")
-    with col2:
-        mostrar_pasos(me.pasos[1:], "Algoritmo de Meeus (comprobación)")
-        if g.valor == me.valor:
-            st.markdown("**Los dos algoritmos coinciden.**")
-        else:
-            st.error("Los algoritmos no coinciden (no debería ocurrir).")
-        dia = C.zeller(*g.valor, calendario=cal_usado).valor
-        st.markdown(f"Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
+    mostrar_pasos(g.pasos[1:], "Algoritmo de Gauss")
+    dia = C.zeller(*g.valor, calendario=cal_usado).valor
+    st.markdown(f"Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
 
     st.subheader("Fiestas móviles de ese año")
     st.dataframe(pd.DataFrame([{"Fiesta": n, "Fecha": fecha_txt(*f),
@@ -458,7 +449,6 @@ Se cuenta cuántos días han pasado desde un origen y solo nos quedamos con el r
 $M$ y $N$ son correcciones del siglo: $k=\lfloor Y/100\rfloor$, $p=\lfloor (13+8k)/25\rfloor$, $q=\lfloor k/4\rfloor$,
 $M=(15-p+k-q)\bmod 30$, $N=(4+k-q)\bmod 7$ ($M=15$, $N=6$ en el juliano).
 **Excepciones:** si $d=29,\ e=6$ → 19 de abril; si $d=28,\ e=6$ y $(11M+11)\bmod 30<19$ → 18 de abril.
-El **algoritmo de Meeus** obtiene lo mismo sin excepciones y la app lo usa como comprobación.
 
 ### 5. Método mental (Doomsday)
 Combina lo anterior: el ancla del siglo es el término de Zeller del siglo, el paso $a+b+\lfloor b/4\rfloor$ es el término $K+\lfloor K/4\rfloor$ reducido
@@ -468,13 +458,12 @@ Combina lo anterior: el ancla del siglo es el término de Zeller del siglo, el p
 El archivo `test_calendario.py` comprueba de forma automática que:
 * Zeller coincide con la librería `datetime` de Python en **todos los días** del 1-1-1583 al 31-12-2400 (más de 300 000 fechas).
 * El método mental coincide en todos los días de 1800 a 2199.
-* Gauss y Meeus dan la misma Pascua desde el año 1 hasta el 5000, siempre en domingo y entre el 22-III y el 25-IV,
-  y coinciden con la librería `dateutil`.
+* La Pascua de Gauss cae siempre en domingo y entre el 22-III y el 25-IV,
+  y coincide con la librería `dateutil`.
 
 ### Referencias
 - Zeller, C. (1882). Die Grundaufgaben der Kalenderrechnung auf neue und vereinfachte Weise gelöst. *Württembergische Vierteljahrshefte für Landesgeschichte*, 5, 313–314.
 - Gauss, C. F. (1800). Berechnung des Osterfestes. *Monatliche Correspondenz zur Beförderung der Erd- und Himmels-Kunde*, 2, 121–130.
-- Meeus, J. (1991). *Astronomical Algorithms*. Willmann-Bell.
 - Berlekamp, E. R., Conway, J. H., & Guy, R. K. (1982). *Winning Ways for your Mathematical Plays* (Vol. 2). Academic Press.
 - Richards, E. G. (2013). Calendars. En S. E. Urban & P. K. Seidelmann (Eds.), *Explanatory Supplement to the Astronomical Almanac* (3.ª ed.). University Science Books.
 - Gregorio XIII (1582). Bula *Inter gravissimas*.
