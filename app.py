@@ -23,7 +23,7 @@ import calendario as C
 
 AUTORES = ["Oscar Lidon Garcia", "Zhengjie Zhan"]
 
-st.set_page_config(page_title="Máquina del tiempo modular", page_icon="🕰️", layout="wide")
+st.set_page_config(page_title="Máquina del tiempo modular", page_icon="", layout="wide")
 
 
 # ---------------------------------------------------------------------------
@@ -81,7 +81,7 @@ def mini_calendario(y, m, d, cal):
 # ---------------------------------------------------------------------------
 
 def pagina_inicio():
-    st.title("🕰️ Máquina del tiempo modular")
+    st.title("Máquina del tiempo modular")
     st.subheader("Trabajo 18 · Calendarios y aritmética modular: ¿qué día de la semana fue?")
     st.markdown("**Autores:** " + " · ".join(AUTORES))
     st.caption("Trabajo de aplicaciones · Temas 1 y 2 (aritmética entera y modular) · "
@@ -98,7 +98,7 @@ Esta aplicación usa **congruencias módulo 7**, la **división entera** y los r
 |  **Día de la semana** | Aplica la **congruencia de Zeller** a cualquier fecha y muestra cada paso; lo comprueba con un segundo método. |
 |  **365 ≡ 1 (mod 7)** | Explica por qué cada año la misma fecha cae un día más tarde (dos si hay un 29 de febrero). |
 |  **Pascua** | Aplica los **algoritmos de Gauss y de Meeus** y explica qué significa cada resto. |
-|  **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano ↔ gregoriano. |
+|  **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano gregoriano. |
 |  **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (método *Doomsday* de Conway). |
 |  **Ejemplos resueltos** | Los ejemplos hechos a mano en la ficha técnica, para cotejarlos con la app. |
 |  **¿Cómo funciona?** | El fundamento matemático de todo lo anterior. |
@@ -108,7 +108,7 @@ Usa el menú de la izquierda para navegar.
 
 
 def pagina_zeller():
-    st.header("🗓️ ¿Qué día de la semana fue?  — Congruencia de Zeller")
+    st.header("¿Qué día de la semana fue?  — Congruencia de Zeller")
     st.latex(r"h \equiv q + \left\lfloor \frac{13(m+1)}{5} \right\rfloor + K + \left\lfloor \frac{K}{4} "
              r"\right\rfloor + \left\lfloor \frac{J}{4} \right\rfloor + 5J \pmod 7 \quad\text{(gregoriano)}")
     st.latex(r"h \equiv q + \left\lfloor \frac{13(m+1)}{5} \right\rfloor + K + \left\lfloor \frac{K}{4} "
@@ -151,7 +151,7 @@ def pagina_zeller():
         st.markdown("**Comprobación por otro camino (número de día juliano)**")
         n = C.jdn(y, m, d, cal_usado)
         st.markdown(f"JDN = {n:,}".replace(",", ".") + f";  {n} mod 7 = {n % 7}  "
-                    f"(0 = lunes) ⇒ **{C.dia_semana_por_jdn(y, m, d, cal_usado)}** ✔️")
+                    f"(0 = lunes) ⇒ **{C.dia_semana_por_jdn(y, m, d, cal_usado)}** ")
         b = C.explicar_bisiesto(y, cal_usado)
         with st.expander(f"¿Es {y} bisiesto?"):
             st.markdown("\n".join(f"- {p}" for p in b.pasos))
@@ -177,7 +177,7 @@ queda al final y no rompe el patrón.
 
 
 def pagina_anual():
-    st.header("📈 365 ≡ 1 (mod 7): cada año, un día más")
+    st.header("365 ≡ 1 (mod 7): cada año, un día más")
     st.markdown("""
 Una semana tiene 7 días. Al dividir los días de un año entre 7:
 
@@ -211,7 +211,7 @@ Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero
 
 
 def pagina_pascua():
-    st.header("🐣 Fecha de Pascua — algoritmos de Gauss y de Meeus")
+    st.header("Fecha de Pascua — algoritmos de Gauss y de Meeus")
     st.markdown("""
 **Regla (Concilio de Nicea, 325):** la Pascua es el **primer domingo después de la primera luna llena
 que cae el 21 de marzo o después** (equinoccio eclesiástico). Por eso siempre está entre el **22 de marzo y el 25 de abril**.
@@ -238,11 +238,11 @@ El algoritmo usa tres ciclos, cada uno con su resto:
     with col2:
         mostrar_pasos(me.pasos[1:], "Algoritmo de Meeus (comprobación)")
         if g.valor == me.valor:
-            st.markdown("✔️ **Los dos algoritmos coinciden.**")
+            st.markdown("**Los dos algoritmos coinciden.**")
         else:
             st.error("Los algoritmos no coinciden (no debería ocurrir).")
         dia = C.zeller(*g.valor, calendario=cal_usado).valor
-        st.markdown(f"✔️ Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
+        st.markdown(f"Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
 
     st.subheader("Fiestas móviles de ese año")
     st.dataframe(pd.DataFrame([{"Fiesta": n, "Fecha": fecha_txt(*f),
@@ -265,7 +265,7 @@ El algoritmo usa tres ciclos, cada uno con su resto:
 
 
 def pagina_reforma():
-    st.header("⛪ La reforma gregoriana (1582)")
+    st.header("La reforma gregoriana (1582)")
     st.markdown("""
 **El problema.** El calendario juliano (Julio César, 46 a. C.) pone un bisiesto cada 4 años, de modo que el año medio dura
 365,25 días. El año trópico (de equinoccio a equinoccio) dura unos **365,2422** días. El error es de
@@ -296,7 +296,7 @@ y la regla de la Pascua, que se basa en el 21 de marzo, se iba desfasando.
                                 "Desfase desde el 1 de marzo (días)": C.desfase_juliano_gregoriano(s * 100)}
                                for s in range(15, 22)]), hide_index=True)
 
-    st.subheader("Conversor juliano ↔ gregoriano")
+    st.subheader("Conversor juliano gregoriano")
     c0, _ = st.columns([2, 3])
     origen = c0.radio("La fecha está en el calendario…", [C.JULIANO, C.GREGORIANO], horizontal=True)
     y, m, d = selector_fecha("r", 1616, 4, 23)
@@ -330,12 +330,12 @@ def nueva_pregunta():
 
 
 def pagina_juego():
-    st.header("🎮 Entrenamiento del cálculo mental — método «Doomsday»")
+    st.header("Entrenamiento del cálculo mental — método «Doomsday»")
     ss = st.session_state
     for k, v in (("aciertos", 0), ("intentos", 0), ("racha", 0), ("mejor_racha", 0), ("tiempos", [])):
         ss.setdefault(k, v)
 
-    with st.expander("📖 Tarjeta del método mental (léela antes de jugar)", expanded=ss.intentos == 0):
+    with st.expander("Tarjeta del método mental (léela antes de jugar)", expanded=ss.intentos == 0):
         st.markdown("""
 **Idea (J. H. Conway, 1973):** en cada año hay unas fechas fáciles de recordar que **siempre caen el mismo día de la semana**,
 el *doomsday* («día del juicio») del año. Basta con calcular ese día y contar desde la fecha ancla más cercana.
@@ -371,7 +371,7 @@ Truco: 4/4, 6/6, 8/8, 10/10, 12/12 y «trabajo de **9 a 5** en el **7-Eleven**»
     y, m, d = ss.pregunta
     st.markdown(f"## ¿Qué día de la semana es el **{fecha_txt(y, m, d)}**?")
 
-    with st.expander("💡 Pista"):
+    with st.expander("Pista"):
         an = C.ANCLA_SIGLO[y // 100]
         st.markdown(f"Ancla del siglo: **{C.DIAS_DOM0[an]}**. Día ancla de {C.MESES[m - 1]}: "
                     f"**{C.ancla_mes(y, m)}**. ¿Es bisiesto? **{'sí' if C.es_bisiesto(y) else 'no'}**.")
@@ -394,11 +394,11 @@ Truco: 4/4, 6/6, 8/8, 10/10, 12/12 y «trabajo de **9 a 5** en el **7-Eleven**»
     else:
         correcto = C.zeller(y, m, d, C.GREGORIANO).valor
         if ss.respondida == correcto:
-            st.success(f"✅ ¡Correcto! Es **{correcto}** ({ss.tiempos[-1]:.1f} s).")
+            st.success(f"¡Correcto! Es **{correcto}** ({ss.tiempos[-1]:.1f} s).")
         else:
-            st.error(f"❌ Has dicho {ss.respondida}; es **{correcto}**.")
+            st.error(f"Has dicho {ss.respondida}; es **{correcto}**.")
         mostrar_pasos(C.doomsday(y, m, d).pasos, "Solución con el método mental")
-        st.button("Siguiente fecha ➡️", on_click=nueva_pregunta, type="primary")
+        st.button("Siguiente fecha ", on_click=nueva_pregunta, type="primary")
 
     if st.button("Reiniciar marcador"):
         for k in ("aciertos", "intentos", "racha", "mejor_racha"):
@@ -409,7 +409,7 @@ Truco: 4/4, 6/6, 8/8, 10/10, 12/12 y «trabajo de **9 a 5** en el **7-Eleven**»
 
 
 def pagina_ejemplos():
-    st.header("✍️ Ejemplos resueltos a mano (para cotejar con la ficha técnica)")
+    st.header("Ejemplos resueltos a mano (para cotejar con la ficha técnica)")
     st.markdown("Estos son los ejemplos que hemos resuelto a mano. La app los recalcula en tiempo real: "
                 "los resultados deben coincidir con los de la ficha técnica.")
     st.subheader("1. Zeller — 12 de octubre de 1492 (calendario juliano)")
@@ -425,7 +425,7 @@ def pagina_ejemplos():
 
 
 def pagina_como_funciona():
-    st.header("❓ ¿Cómo funciona?")
+    st.header("¿Cómo funciona?")
     st.markdown(r"""
 ### 1. División entera y congruencias
 Para enteros $a$ y $n>0$ existen $q$ y $r$ únicos con $a = n\,q + r$, $0 \le r < n$. Escribimos $q=\lfloor a/n\rfloor$ y $r = a \bmod n$.
@@ -486,18 +486,18 @@ El archivo `test_calendario.py` comprueba de forma automática que:
 # ---------------------------------------------------------------------------
 
 PAGINAS = {
-    "🏠 Inicio": pagina_inicio,
-    "🗓️ Día de la semana (Zeller)": pagina_zeller,
-    "📈 365 ≡ 1 (mod 7)": pagina_anual,
-    "🐣 Pascua (Gauss/Meeus)": pagina_pascua,
-    "⛪ Reforma gregoriana": pagina_reforma,
-    "🎮 Entrenamiento mental": pagina_juego,
-    "✍️ Ejemplos resueltos": pagina_ejemplos,
-    "❓ ¿Cómo funciona?": pagina_como_funciona,
+    "Inicio": pagina_inicio,
+    "Día de la semana (Zeller)": pagina_zeller,
+    "365 ≡ 1 (mod 7)": pagina_anual,
+    "Pascua (Gauss/Meeus)": pagina_pascua,
+    "Reforma gregoriana": pagina_reforma,
+    "Entrenamiento mental": pagina_juego,
+    "Ejemplos resueltos": pagina_ejemplos,
+    "¿Cómo funciona?": pagina_como_funciona,
 }
 
 with st.sidebar:
-    st.markdown("## 🕰️ Máquina del tiempo modular")
+    st.markdown("## Máquina del tiempo modular")
     st.caption("Trabajo 18 · UMH · 2026–2027")
     st.markdown("**Autores**  \n" + "  \n".join(AUTORES))
     st.divider()
