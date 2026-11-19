@@ -489,7 +489,7 @@ PAGINAS = {
     "Inicio": pagina_inicio,
     "Día de la semana (Zeller)": pagina_zeller,
     "365 ≡ 1 (mod 7)": pagina_anual,
-    "Pascua (Gauss/Meeus)": pagina_pascua,
+    "Pascua (Gauss)": pagina_pascua,
     "Reforma gregoriana": pagina_reforma,
     "Entrenamiento mental": pagina_juego,
     "Ejemplos resueltos": pagina_ejemplos,
