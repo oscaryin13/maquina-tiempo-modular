@@ -38,27 +38,3 @@ streamlit run app.py          # se abre en http://localhost:8501
 python calendario.py          # demostración por consola, sin interfaz
 python test_calendario.py     # pruebas de corrección
 ```
-
-## Publicar con un enlace (gratis) — Streamlit Community Cloud
-
-1. Cread un repositorio **público** en GitHub y subid estos archivos (al menos `app.py`, `calendario.py` y `requirements.txt`).
-2. Entrad en <https://share.streamlit.io> con la cuenta de GitHub → **Create app** → elegid el repositorio, la rama `main` y el archivo `app.py`.
-3. En *App URL* poned un nombre, p. ej. `maquina-tiempo-modular`, y pulsad **Deploy**.
-4. El enlace queda así: `https://maquina-tiempo-modular.streamlit.app`. Comprobad antes de entregarlo que se abre en una ventana de incógnito.
-
-> Las apps gratuitas se «duermen» si nadie las abre en unos días; basta con abrir el enlace y pulsar *Wake up*.
-> Abridla de vez en cuando durante el periodo de evaluación.
-
-## Verificación
-
-`test_calendario.py` comprueba que:
-- Zeller coincide con `datetime` de Python en **todos** los días del 1-1-1583 al 31-12-2400.
-- Zeller juliano coincide con el número de día juliano (5000 fechas aleatorias).
-- El método mental coincide en todos los días de 1800 a 2199.
-- Gauss = Meeus para los años 1–5000; la Pascua siempre cae en domingo, entre el 22-III y el 25-IV, y coincide con `dateutil.easter`.
-- Fechas de referencia: 4-X-1582 jueves → 15-X-1582 viernes; Pascua de 1981 = 19-IV y de 1954 = 18-IV (excepciones de Gauss).
-
-## Uso de IA (hay que declararlo en la ficha técnica)
-
-La app se ha desarrollado con ayuda de **Claude (Anthropic)**. Hay que indicar en la ficha técnica para qué se usó
-(generación del código Python y de la interfaz) y la lista de las instrucciones (prompts) principales.
