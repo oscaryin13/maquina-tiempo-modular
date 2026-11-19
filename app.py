@@ -57,25 +57,6 @@ def selector_calendario(prefijo):
     return op
 
 
-def mini_calendario(y, m, d, cal):
-    """Hoja del mes con el día marcado (lunes primero)."""
-    primero = C.dia_semana_por_jdn(y, m, 1, cal)
-    orden = ["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]
-    offset = orden.index(primero)
-    n = C.dias_del_mes(y, m, cal)
-    celdas = [""] * offset + [str(i) for i in range(1, n + 1)]
-    if y == 1582 and m == 10 and cal == C.GREGORIANO:  # mes de la reforma
-        celdas = [""] * orden.index("lunes") + ["1", "2", "3", "4"] + [str(i) for i in range(15, 32)]
-    while len(celdas) % 7:
-        celdas.append("")
-    filas = [celdas[i:i + 7] for i in range(0, len(celdas), 7)]
-    df = pd.DataFrame(filas, columns=["L", "M", "X", "J", "V", "S", "D"])
-
-    def marcar(v):
-        return "background-color:#ffd54f;font-weight:bold" if v == str(d) else ""
-    st.dataframe(df.style.map(marcar), hide_index=True, width="stretch")
-
-
 # ---------------------------------------------------------------------------
 # Páginas
 # ---------------------------------------------------------------------------
@@ -87,9 +68,6 @@ def pagina_inicio():
     st.caption("Trabajo de aplicaciones · Temas 1 y 2 (aritmética entera y modular) · "
                "Curso 2026–2027 · Universidad Miguel Hernández")
     st.divider()
-    hoy = dt.date.today()
-    st.info(f"Hoy es **{C.zeller(hoy.year, hoy.month, hoy.day).valor}**, {fecha_txt(hoy.year, hoy.month, hoy.day)}. "
-            f"Lo ha calculado la congruencia de Zeller, no el reloj del ordenador.")
     st.markdown("""
 Esta aplicación usa **congruencias módulo 7**, la **división entera** y los restos para:
 
@@ -100,7 +78,6 @@ Esta aplicación usa **congruencias módulo 7**, la **división entera** y los r
 |  **Pascua** | Aplica el **algoritmo de Gauss** y explica qué significa cada resto. |
 |  **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano gregoriano. |
 |  **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (método *Doomsday* de Conway). |
-|  **Ejemplos resueltos** | Los ejemplos hechos a mano en la ficha técnica, para cotejarlos con la app. |
 |  **¿Cómo funciona?** | El fundamento matemático de todo lo anterior. |
 
 Usa el menú de la izquierda para navegar.
@@ -146,8 +123,6 @@ def pagina_zeller():
     with col1:
         mostrar_pasos(r.pasos, "Zeller, paso a paso")
     with col2:
-        st.markdown(f"**{C.MESES[m - 1].capitalize()} de {y}** ({cal_usado})")
-        mini_calendario(y, m, d, cal_usado)
         st.markdown("**Comprobación por otro camino (número de día juliano)**")
         n = C.jdn(y, m, d, cal_usado)
         st.markdown(f"JDN = {n:,}".replace(",", ".") + f";  {n} mod 7 = {n % 7}  "
@@ -155,13 +130,6 @@ def pagina_zeller():
         b = C.explicar_bisiesto(y, cal_usado)
         with st.expander(f"¿Es {y} bisiesto?"):
             st.markdown("\n".join(f"- {p}" for p in b.pasos))
-        if cal_usado == C.JULIANO:
-            gy, gm, gd = C.convertir_calendario(y, m, d, C.JULIANO)
-            st.info(f"En el calendario gregoriano (proléptico) ese mismo día sería el {fecha_txt(gy, gm, gd)}.")
-        elif (y, m, d) >= (1, 3, 1):
-            jy, jm, jd = C.convertir_calendario(y, m, d, C.GREGORIANO)
-            st.caption(f"En el calendario juliano ese mismo día era el {fecha_txt(jy, jm, jd)}.")
-
     with st.expander("¿Por qué ⌊13(m+1)/5⌋?"):
         st.markdown("""
 Contando desde marzo, los meses tienen 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31 días.
@@ -197,17 +165,6 @@ Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero
         st.error(str(e))
         return
     st.dataframe(pd.DataFrame(C.desplazamiento_anual(y, m, d, n)), hide_index=True, width="stretch")
-    st.markdown("""
-**Consecuencias:**
-* En 4 años julianos hay 4·365 + 1 = 1461 días; 1461 = 7·208 + 5 ⇒ el calendario **no** se repite cada 4 años.
-* En 28 años julianos hay 28·365 + 7 = 10227 días = 7·1461 ≡ 0 (mod 7): el calendario juliano se repite cada **28 años** (ciclo solar).
-* En 400 años gregorianos hay 400·365 + 97 = 146097 días = 7·20871 ≡ 0 (mod 7): el calendario gregoriano se repite exactamente cada **400 años**.
-""")
-    st.markdown("**Años con el mismo calendario que el elegido** (misma fecha del 1 de enero y mismo tipo de año):")
-    base_dia = C.dia_semana_por_jdn(y, 1, 1, C.GREGORIANO)
-    iguales = [a for a in range(y - 40, y + 41) if a != y and a >= 1583
-               and C.es_bisiesto(a) == C.es_bisiesto(y) and C.dia_semana_por_jdn(a, 1, 1, C.GREGORIANO) == base_dia]
-    st.write(", ".join(map(str, iguales)) or "—")
 
 
 def gauss_lineas(y, cal):
@@ -333,23 +290,13 @@ El algoritmo usa tres ciclos, cada uno con su resto:
     dia = C.zeller(*g.valor, calendario=cal_usado).valor
     st.markdown(f"Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
 
-    st.subheader("Fiestas móviles de ese año")
-    st.dataframe(pd.DataFrame([{"Fiesta": n, "Fecha": fecha_txt(*f),
-                                "Día": C.zeller(*f, calendario=cal_usado).valor}
-                               for n, f in C.fiestas_moviles(y, cal_usado)]), hide_index=True)
-
     st.subheader("Pascua de varios años")
     a, b = st.slider("Intervalo", 1583, 2200, (2020, 2035))
     filas = []
     for yy in range(a, b + 1):
         gg = C.pascua_gauss(yy, C.GREGORIANO)
-        jj = C.pascua_gauss(yy, C.JULIANO)
-        jg = C.convertir_calendario(*jj.valor, C.JULIANO)
-        A, B, Cc = yy % 19, yy % 4, yy % 7
-        filas.append({"Año": yy, "a=Y mod 19": A, "b=Y mod 4": B, "c=Y mod 7": Cc,
-                      "Católica (greg.)": f"{gg.valor[2]}/{gg.valor[1]}",
-                      "Ortodoxa (fecha gregoriana)": f"{jg[2]}/{jg[1]}",
-                      "¿Coinciden?": "sí" if (jg[1], jg[2]) == gg.valor[1:] else ""})
+        filas.append({"Año": yy, "a=Y mod 19": yy % 19, "b=Y mod 4": yy % 4, "c=Y mod 7": yy % 7,
+                      "Pascua (gregoriano)": f"{gg.valor[2]}/{gg.valor[1]}"})
     st.dataframe(pd.DataFrame(filas), hide_index=True, width="stretch")
 
 
@@ -497,22 +444,6 @@ Truco: 4/4, 6/6, 8/8, 10/10, 12/12 y «trabajo de **9 a 5** en el **7-Eleven**»
         st.rerun()
 
 
-def pagina_ejemplos():
-    st.header("Ejemplos resueltos a mano (para cotejar con la ficha técnica)")
-    st.markdown("Estos son los ejemplos que hemos resuelto a mano. La app los recalcula en tiempo real: "
-                "los resultados deben coincidir con los de la ficha técnica.")
-    st.subheader("1. Zeller — 12 de octubre de 1492 (calendario juliano)")
-    mostrar_pasos(C.zeller(1492, 10, 12).pasos, "")
-    st.subheader("2. Zeller con enero — 1 de enero de 2000 (gregoriano)")
-    mostrar_pasos(C.zeller(2000, 1, 1).pasos, "")
-    st.subheader("3. Pascua de 2026 — algoritmo de Gauss")
-    mostrar_pasos(C.pascua_gauss(2026).pasos, "")
-    st.subheader("4. Pascua de 1981 — caso excepcional de Gauss")
-    mostrar_pasos(C.pascua_gauss(1981).pasos, "")
-    st.subheader("5. Método mental — 20 de julio de 1969")
-    mostrar_pasos(C.doomsday(1969, 7, 20).pasos, "")
-
-
 def pagina_como_funciona():
     st.header("¿Cómo funciona?")
     st.markdown(r"""
@@ -579,7 +510,6 @@ PAGINAS = {
     "Pascua (Gauss)": pagina_pascua,
     "Reforma gregoriana": pagina_reforma,
     "Entrenamiento mental": pagina_juego,
-    "Ejemplos resueltos": pagina_ejemplos,
     "¿Cómo funciona?": pagina_como_funciona,
 }
 
