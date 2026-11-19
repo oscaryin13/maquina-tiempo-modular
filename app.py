@@ -210,6 +210,104 @@ Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero
     st.write(", ".join(map(str, iguales)) or "—")
 
 
+def gauss_lineas(y, cal):
+    """Algoritmo de Gauss: lista de (línea de cálculo, [explicaciones]) y fecha final (año, mes, día)."""
+    jul = cal == C.JULIANO
+    a, b, c = y % 19, y % 4, y % 7
+    L = [
+        (f"a = {y} mod 19 = {a}",
+         [f"a = {a} → Posición del año en el ciclo de Metón: cada 19 años las fases de la Luna vuelven a caer "
+          f"en las mismas fechas, así que solo importa el resto de dividir entre 19 (un valor entre 0 y 18)."]),
+        (f"b = {y} mod 4 = {b}",
+         [f"b = {b} → Lugar del año dentro del ciclo de 4 años de los bisiestos (b = 0 es un año múltiplo de 4)."]),
+        (f"c = {y} mod 7 = {c}",
+         [f"c = {c} → Como 365 ≡ 1 (mod 7), cada año las fechas avanzan un día de la semana; c lleva esa cuenta "
+          f"módulo 7 y servirá para encontrar el domingo."]),
+    ]
+    if jul:
+        M, N = 15, 6
+        L.append(("Calendario juliano: M = 15 y N = 6",
+                  ["M = 15, N = 6 → En el calendario juliano no hay correcciones de siglo, así que M y N son "
+                   "constantes y no hacen falta k, p ni q."]))
+    else:
+        k = y // 100
+        p = (13 + 8 * k) // 25
+        q = k // 4
+        M = (15 - p + k - q) % 30
+        N = (4 + k - q) % 7
+        L.append((f"k = ⌊{y}/100⌋ = {k};  p = ⌊(13 + 8k)/25⌋ = ⌊{13 + 8 * k}/25⌋ = {p};  q = ⌊k/4⌋ = {q}",
+                  [f"k = {k} → Siglo del año (división entera entre 100: el {y} pertenece al siglo {k + 1}). "
+                   f"Es la base de las correcciones del calendario gregoriano.",
+                   f"p = {p} → Corrección lunar: el ciclo de Metón no es exacto y la Luna se retrasa unos 8 días "
+                   f"cada 2 500 años; p acumula esos días siglo a siglo.",
+                   f"q = {q} → Corrección solar: de los k años seculares solo los múltiplos de 400 son bisiestos, "
+                   f"así que k − q mide los bisiestos seculares suprimidos."]))
+        L.append((f"M = (15 − p + k − q) mod 30 = ({15 - p + k - q}) mod 30 = {M}",
+                  [f"M = {M} → Corrección del siglo para la Luna: parte del valor base 15, resta p (corrección lunar) "
+                   f"y suma k − q (corrección solar). Es módulo 30 porque un mes lunar dura casi 30 días."]))
+        L.append((f"N = (4 + k − q) mod 7 = ({4 + k - q}) mod 7 = {N}",
+                  [f"N = {N} → Corrección del día de la semana por los bisiestos de siglo suprimidos. "
+                   f"Es módulo 7 porque se trata de días de la semana."]))
+
+    d = (19 * a + M) % 30
+    luna = (3, 21 + d) if 21 + d <= 31 else (4, 21 + d - 31)
+    L.append((f"d = (19a + M) mod 30 = (19·{a} + {M}) mod 30 = {19 * a + M} mod 30 = {d}",
+              [f"d = {d} → Días que pasan desde el 21 de marzo hasta la luna llena pascual: "
+               f"esa luna llena cae el {luna[1]} de {C.MESES[luna[0] - 1]}.",
+               f"El factor 19 viene de que cada año las fases de la Luna se adelantan unos 11 días "
+               f"(19 ≡ −11 mod 30)."]))
+    e = (2 * b + 4 * c + 6 * d + N) % 7
+    L.append((f"e = (2b + 4c + 6d + N) mod 7 = (2·{b} + 4·{c} + 6·{d} + {N}) mod 7 = "
+              f"{2 * b + 4 * c + 6 * d + N} mod 7 = {e}",
+              [f"e = {e} → Días extra hasta el domingo: tras esa luna llena, el domingo siguiente llega "
+               f"e + 1 = {e + 1} días después (e va de 0 a 6).",
+               f"Los coeficientes 2, 4 y 6 convierten los bisiestos (b), el año (c) y la fecha de la luna llena (d) "
+               f"en días de la semana, y N añade la corrección del siglo."]))
+
+    total = 22 + d + e
+    if total <= 31:
+        mes, dia = 3, total
+        sub = [f"22 + d + e → Contando desde el 1 de marzo, la luna llena es el 21 + d y el domingo llega "
+               f"e + 1 días después, es decir, el día 22 + d + e.",
+               f"{total} ≤ 31 → Sigue siendo marzo: {dia} de marzo."]
+    else:
+        mes, dia = 4, d + e - 9
+        sub = [f"22 + d + e → Contando desde el 1 de marzo, la luna llena es el 21 + d y el domingo llega "
+               f"e + 1 días después, es decir, el día 22 + d + e.",
+               f"{total} > 31 → Nos pasamos de marzo; restando los 31 días de marzo queda d + e − 9 = {dia} de abril."]
+    L.append((f"22 + d + e = 22 + {d} + {e} = {total}", sub))
+
+    if not jul and d == 29 and e == 6:
+        mes, dia = 4, 19
+        L.append(("Excepción de Gauss: d = 29 y e = 6",
+                  ["Sin la excepción saldría el 26 de abril, fecha imposible (la Pascua nunca pasa del 25 de abril), "
+                   "así que se sustituye por el 19 de abril."]))
+    elif not jul and d == 28 and e == 6 and (11 * M + 11) % 30 < 19:
+        mes, dia = 4, 18
+        L.append((f"Excepción de Gauss: d = 28, e = 6 y (11M + 11) mod 30 = {(11 * M + 11) % 30} < 19",
+                  ["Sin la excepción saldría el 25 de abril; en este caso Gauss lo sustituye por el 18 de abril."]))
+    L.append((f"Domingo de Pascua: **{dia} de {C.MESES[mes - 1]} de {y}** ({cal})", []))
+    return L, (y, mes, dia)
+
+
+def mostrar_gauss(y, cal, g):
+    """Muestra el algoritmo de Gauss con objetivo y cada línea explicada."""
+    st.markdown("**Algoritmo de Gauss**")
+    st.markdown(f"**Objetivo:** calcular la fecha del Domingo de Pascua del año {y}, es decir, el primer domingo "
+                f"después de la primera luna llena que cae el 21 de marzo o después. Gauss lo consigue solo con "
+                f"restos (mod) y divisiones enteras: primero calcula dónde está la Luna (d), después cuántos días "
+                f"faltan hasta el domingo (e) y con ambos obtiene el día.")
+    L, fecha = gauss_lineas(y, cal)
+    if fecha != g.valor:  # seguridad: si no coincidiera, se muestran los pasos básicos
+        mostrar_pasos(g.pasos[1:], "")
+        return
+    lineas = []
+    for texto, subs in L:
+        lineas.append(f"- {texto}")
+        lineas += [f"    - {t}" for t in subs]
+    st.markdown("\n".join(lineas))
+
+
 def pagina_pascua():
     st.header("Fecha de Pascua — algoritmo de Gauss")
     st.markdown("""
@@ -231,7 +329,7 @@ El algoritmo usa tres ciclos, cada uno con su resto:
     _, mm, dd = g.valor
     st.success(f"### Domingo de Pascua {y}: **{dd} de {C.MESES[mm - 1]}** (calendario {cal_usado})")
 
-    mostrar_pasos(g.pasos[1:], "Algoritmo de Gauss")
+    mostrar_gauss(y, cal_usado, g)
     dia = C.zeller(*g.valor, calendario=cal_usado).valor
     st.markdown(f"Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
 
