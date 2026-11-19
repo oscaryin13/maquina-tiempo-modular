@@ -290,15 +290,6 @@ El algoritmo usa tres ciclos, cada uno con su resto:
     dia = C.zeller(*g.valor, calendario=cal_usado).valor
     st.markdown(f"Zeller confirma que el {dd} de {C.MESES[mm - 1]} de {y} es **{dia}**.")
 
-    st.subheader("Pascua de varios años")
-    a, b = st.slider("Intervalo", 1583, 2200, (2020, 2035))
-    filas = []
-    for yy in range(a, b + 1):
-        gg = C.pascua_gauss(yy, C.GREGORIANO)
-        filas.append({"Año": yy, "a=Y mod 19": yy % 19, "b=Y mod 4": yy % 4, "c=Y mod 7": yy % 7,
-                      "Pascua (gregoriano)": f"{gg.valor[2]}/{gg.valor[1]}"})
-    st.dataframe(pd.DataFrame(filas), hide_index=True, width="stretch")
-
 
 def pagina_reforma():
     st.header("La reforma gregoriana (1582)")
