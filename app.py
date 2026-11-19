@@ -211,7 +211,7 @@ Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero
 
 
 def pagina_pascua():
-    st.header("Fecha de Pascua — algoritmos de Gauss y de Meeus")
+    st.header("Fecha de Pascua — algoritmos de Gauss")
     st.markdown("""
 **Regla (Concilio de Nicea, 325):** la Pascua es el **primer domingo después de la primera luna llena
 que cae el 21 de marzo o después** (equinoccio eclesiástico). Por eso siempre está entre el **22 de marzo y el 25 de abril**.
