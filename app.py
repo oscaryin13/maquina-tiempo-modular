@@ -84,6 +84,22 @@ def pagina_zeller():
     st.latex(r"h \equiv q + \left\lfloor \frac{13(m+1)}{5} \right\rfloor + K + \left\lfloor \frac{K}{4} "
              r"\right\rfloor + 5 + 6J \pmod 7 \quad\text{(juliano)}")
 
+    st.markdown("""
+**Variables de la fórmula**
+
+| Variable | Significado |
+|---|---|
+| h | Día de la semana |
+| q | Día del mes |
+| m | Mes |
+| K | Últimos dos dígitos del año |
+| J | Primeros dos dígitos del año |
+
+**Valores de h:** 0 = sábado, 1 = domingo, 2 = lunes, 3 = martes, 4 = miércoles, 5 = jueves, 6 = viernes.
+
+Para enero y febrero se toma m = 13 y m = 14 y se usa el año anterior para calcular K y J.
+""")
+
     ejemplos = {"(elige un ejemplo histórico)": None,
                 "Llegada de Colón a América — 12/10/1492": (1492, 10, 12),
                 "Último día juliano en España — 4/10/1582": (1582, 10, 4),
