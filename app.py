@@ -168,14 +168,26 @@ def pagina_zeller():
         b = C.explicar_bisiesto(y, cal_usado)
         with st.expander(f"¿Es {y} bisiesto?"):
             st.markdown("\n".join(f"- {p}" for p in b.pasos))
-    with st.expander("¿Por qué ⌊13(m+1)/5⌋?"):
-        st.markdown("""
-Contando desde marzo, los meses tienen 31, 30, 31, 30, 31, 31, 30, 31, 30, 31, 31 días.
-Cada mes de 31 días adelanta el día de la semana del mes siguiente en 31 ≡ 3 (mod 7) y cada mes de 30 lo adelanta en 30 ≡ 2 (mod 7).
-El término ⌊13(m+1)/5⌋ crece 2 o 3 unidades de un mes al siguiente siguiendo justo ese patrón (13/5 = 2,6 ≈ 30,6 − 28).
-Por eso **enero y febrero se tratan como meses 13 y 14 del año anterior**: así el día irregular (29 de febrero)
-queda al final y no rompe el patrón.
+    with st.expander("Justificación de la fórmula de Zeller"):
+        st.markdown(r"""
+**1. Desplazamiento de los días según la duración de los meses**
+
+Una semana tiene 7 días, por lo que utilizamos el módulo 7 para calcular el desplazamiento de los días de la semana.
+
+* **Meses de 31 días:** $31 \equiv 3 \pmod 7$, por lo que adelantan 3 días.
+* **Meses de 30 días:** $30 \equiv 2 \pmod 7$, por lo que adelantan 2 días.
+
+**2. Término de los meses en la fórmula**
+
+El término $\left\lfloor\frac{13(m+1)}{5}\right\rfloor$ permite representar el desplazamiento de los días de la semana entre los meses, aumentando 2 o 3 unidades según su duración.
+
+**3. Cambio de orden de los meses**
+
+En la fórmula de Zeller, el año comienza en marzo y termina en febrero. Por eso, enero y febrero se consideran los meses 13 y 14 del año anterior.
+
+Esto permite situar el día adicional del año bisiesto (29 de febrero) al final del ciclo, facilitando los cálculos y evitando que interrumpa el patrón de los meses.
 """)
+
         filas = [{"m": mm, "Mes": C.MESES[(mm - 1) % 12] if mm <= 12 else C.MESES[mm - 13],
                   "⌊13(m+1)/5⌋": (13 * (mm + 1)) // 5,
                   "mod 7": ((13 * (mm + 1)) // 5) % 7} for mm in range(3, 15)]
