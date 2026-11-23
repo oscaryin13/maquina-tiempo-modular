@@ -153,7 +153,9 @@ Una semana tiene 7 días. Al dividir los días de un año entre 7:
 * **Año bisiesto:** 366 = 7·52 + **2**  ⇒  366 ≡ 2 (mod 7)
 
 Si una fecha cae un día *d* de la semana, la misma fecha del año siguiente cae, por tanto, en
-*d* + 365 ≡ *d* + 1 (mod 7): **un día más tarde**. Si entre las dos fechas hay un 29 de febrero, el salto es de **dos**.
+*d* + 365 ≡ *d* + 1 (mod 7): **un día más tarde**.
+Si entre las dos fechas hay un 29 de febrero, el salto es de **dos**.
+
 Ojo: lo que importa es si el 29 de febrero queda *entre* las dos fechas, no si el año es bisiesto.
 Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero de 2024, el salto de 2024 a 2025 es de 1.
 """)
