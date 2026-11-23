@@ -480,13 +480,6 @@ El archivo `test_calendario.py` comprueba de forma automática que:
 * El método mental coincide en todos los días de 1800 a 2199.
 * La Pascua de Gauss cae siempre en domingo y entre el 22-III y el 25-IV,
   y coincide con la librería `dateutil`.
-
-### Referencias
-- Zeller, C. (1882). Die Grundaufgaben der Kalenderrechnung auf neue und vereinfachte Weise gelöst. *Württembergische Vierteljahrshefte für Landesgeschichte*, 5, 313–314.
-- Gauss, C. F. (1800). Berechnung des Osterfestes. *Monatliche Correspondenz zur Beförderung der Erd- und Himmels-Kunde*, 2, 121–130.
-- Berlekamp, E. R., Conway, J. H., & Guy, R. K. (1982). *Winning Ways for your Mathematical Plays* (Vol. 2). Academic Press.
-- Richards, E. G. (2013). Calendars. En S. E. Urban & P. K. Seidelmann (Eds.), *Explanatory Supplement to the Astronomical Almanac* (3.ª ed.). University Science Books.
-- Gregorio XIII (1582). Bula *Inter gravissimas*.
 """)
 
 
