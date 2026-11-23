@@ -50,13 +50,6 @@ def selector_fecha(prefijo, y0=1969, m0=7, d0=20, ymin=1, ymax=9999):
     return int(y), int(m), int(d)
 
 
-def selector_calendario(prefijo):
-    op = st.radio("Calendario", [C.AUTO, C.GREGORIANO, C.JULIANO], horizontal=True, key=prefijo + "cal",
-                  format_func=lambda s: {"auto": "Automático (el vigente en España)",
-                                         "gregoriano": "Gregoriano", "juliano": "Juliano"}[s])
-    return op
-
-
 # ---------------------------------------------------------------------------
 # Páginas
 # ---------------------------------------------------------------------------
@@ -109,7 +102,7 @@ def pagina_zeller():
 
     st.selectbox("Ejemplos", list(ejemplos), key="zej", on_change=cargar_ejemplo)
     y, m, d = selector_fecha("z")
-    cal = selector_calendario("z")
+    cal = C.AUTO
 
     try:
         r = C.zeller(y, m, d, cal)
@@ -145,19 +138,16 @@ queda al final y no rompe el patrón.
 
 
 def pagina_anual():
-    st.header("365 ≡ 1 (mod 7): cada año, un día más")
+    st.header("Desplazamiento de los días de la semana (módulo 7)")
     st.markdown("""
-Una semana tiene 7 días. Al dividir los días de un año entre 7:
+Una semana tiene 7 días, por lo que utilizamos el módulo 7 para calcular el desplazamiento de los días.
 
-* **Año normal:** 365 = 7·52 + **1**  ⇒  365 ≡ 1 (mod 7)
-* **Año bisiesto:** 366 = 7·52 + **2**  ⇒  366 ≡ 2 (mod 7)
+* **Año normal:** 365 = 7·52 + 1 → 365 ≡ 1 (mod 7). El día de la semana avanza 1 día.
+* **Año bisiesto:** 366 = 7·52 + 2 → 366 ≡ 2 (mod 7). El día de la semana avanza 2 días, si el intervalo incluye el 29 de febrero.
 
-Si una fecha cae un día *d* de la semana, la misma fecha del año siguiente cae, por tanto, en
-*d* + 365 ≡ *d* + 1 (mod 7): **un día más tarde**.
-Si entre las dos fechas hay un 29 de febrero, el salto es de **dos**.
+Por tanto, si una fecha cae en el día *d* de la semana, la misma fecha del año siguiente cae en *d* + 365 ≡ *d* + 1 (mod 7): **un día más tarde** (o *d* + 2 si entre las dos fechas hay un 29 de febrero).
 
-Ojo: lo que importa es si el 29 de febrero queda *entre* las dos fechas, no si el año es bisiesto.
-Para un cumpleaños en marzo de 2023, el salto a 2024 es de 2; para uno en enero de 2024, el salto de 2024 a 2025 es de 1.
+El desplazamiento depende de si el 29 de febrero se encuentra entre las dos fechas, no simplemente de si el año es bisiesto.
 """)
     y, m, d = selector_fecha("a", 2023, 3, 14, 1583, 9990)
     n = st.slider("Número de años", 4, 30, 10)
@@ -277,12 +267,8 @@ El algoritmo usa tres ciclos, cada uno con su resto:
 * **mod 4** y **mod 7:** bisiestos y días de la semana → para llegar al domingo.
 * **mod 30:** la «edad» de la Luna (un mes lunar ≈ 29,5 días).
 """)
-    c1, c2 = st.columns(2)
-    y = int(c1.number_input("Año", 1, 9999, dt.date.today().year, key="py"))
-    cal = c2.radio("Calendario", [C.AUTO, C.GREGORIANO, C.JULIANO], horizontal=True, key="pcal",
-                   format_func=lambda s: {"auto": "Automático (juliano hasta 1582)",
-                                          "gregoriano": "Gregoriano (Iglesia católica)",
-                                          "juliano": "Juliano (Iglesias ortodoxas)"}[s])
+    y = int(st.number_input("Año", 1, 9999, dt.date.today().year, key="py"))
+    cal = C.AUTO
     g = C.pascua_gauss(y, cal)
     cal_usado = g.pasos[0].split("calendario ")[1].rstrip(".")
     _, mm, dd = g.valor
