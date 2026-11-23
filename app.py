@@ -5,7 +5,7 @@ app.py — «Máquina del tiempo modular» (aplicación web, Opción B del Traba
 Trabajo 18 · Calendarios y aritmética modular: ¿qué día de la semana fue?
 Trabajo de aplicaciones · Temas 1 y 2 · Curso 2026–2027 · Universidad Miguel Hernández
 
-Oscar Lidon Garcia  ·  Zhengjie Zhan
+Autores:  Oscar Lidon Garcia  ·  Zhengjie Zhan
 
 Ejecutar en local:      streamlit run app.py
 Publicar con enlace:    Streamlit Community Cloud (ver README.md)
@@ -165,10 +165,6 @@ def pagina_zeller():
     with col1:
         mostrar_pasos(r.pasos, "Zeller, paso a paso")
     with col2:
-        st.markdown("**Comprobación por otro camino (número de día juliano)**")
-        n = C.jdn(y, m, d, cal_usado)
-        st.markdown(f"JDN = {n:,}".replace(",", ".") + f";  {n} mod 7 = {n % 7}  "
-                    f"(0 = lunes) ⇒ **{C.dia_semana_por_jdn(y, m, d, cal_usado)}** ")
         b = C.explicar_bisiesto(y, cal_usado)
         with st.expander(f"¿Es {y} bisiesto?"):
             st.markdown("\n".join(f"- {p}" for p in b.pasos))
@@ -537,7 +533,6 @@ PAGINAS = {
 with st.sidebar:
     st.markdown("## Máquina del tiempo modular")
     st.caption("Trabajo 18 · UMH · 2026–2027")
-    st.markdown("**Autores**  \n" + "  \n".join(AUTORES))
     st.divider()
     pagina = st.radio("Secciones", list(PAGINAS), label_visibility="collapsed")
 
