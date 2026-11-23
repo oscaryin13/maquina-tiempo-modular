@@ -70,7 +70,7 @@ Esta aplicación usa **congruencias módulo 7**, la **división entera** y los r
 |  **365 ≡ 1 (mod 7)** | Explica por qué cada año la misma fecha cae un día más tarde (dos si hay un 29 de febrero). |
 |  **Pascua** | Aplica el **algoritmo de Gauss** y explica qué significa cada resto. |
 |  **Reforma gregoriana** | Explica la reforma de 1582, el salto de 10 días y su efecto en los cálculos; incluye un conversor juliano gregoriano. |
-|  **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (método *Doomsday* de Conway). |
+|  **Entrenamiento mental** | Un juego para aprender a calcular de cabeza el día de la semana (con la congruencia de Zeller). |
 |  **¿Cómo funciona?** | El fundamento matemático de todo lo anterior. |
 
 Usa el menú de la izquierda para navegar.
@@ -389,95 +389,44 @@ y la regla de la Pascua, que se basa en el 21 de marzo, se iba desfasando.
 # --------------------------- Juego de entrenamiento -------------------------
 
 def nueva_pregunta():
-    nivel = st.session_state.get("nivel", "Medio (1900–2099)")
-    rangos = {"Fácil (año actual)": (dt.date.today().year, dt.date.today().year),
-              "Medio (1900–2099)": (1900, 2099), "Difícil (1800–2199)": (1800, 2199)}
-    a, b = rangos[nivel]
-    y = random.randint(a, b)
+    y = random.randint(1900, 2099)
     m = random.randint(1, 12)
     d = random.randint(1, C.dias_del_mes(y, m))
     st.session_state.pregunta = (y, m, d)
     st.session_state.respondida = None
-    st.session_state.t0 = time.time()
 
 
 def pagina_juego():
-    st.header("Entrenamiento del cálculo mental — método «Doomsday»")
+    st.header("Entrenamiento del cálculo mental")
     ss = st.session_state
-    for k, v in (("aciertos", 0), ("intentos", 0), ("racha", 0), ("mejor_racha", 0), ("tiempos", [])):
-        ss.setdefault(k, v)
-
-    with st.expander("Tarjeta del método mental (léela antes de jugar)", expanded=ss.intentos == 0):
-        st.markdown("""
-**Idea (J. H. Conway, 1973):** en cada año hay unas fechas fáciles de recordar que **siempre caen el mismo día de la semana**,
-el *doomsday* («día del juicio») del año. Basta con calcular ese día y contar desde la fecha ancla más cercana.
-
-Numeramos los días con **domingo = 0, lunes = 1, …, sábado = 6** y trabajamos **módulo 7**.
-
-**1. Ancla del siglo:** 1800 → viernes (5) · **1900 → miércoles (3)** · **2000 → martes (2)** · 2100 → domingo (0).
-
-**2. Doomsday del año** (y = dos últimas cifras):  y = 12·a + b,  c = ⌊b/4⌋  \n  doomsday ≡ ancla + a + b + c (mod 7).
-  *¿Por qué?* Cada año suma 1 (365 ≡ 1) y cada bisiesto suma 1 más; 12 años suman 12 + 3 = 15 ≡ 1 (mod 7).
-
-**3. Fechas ancla (todas caen en el doomsday):**
-
-| Mes | Ene | Feb | Mar | Abr | May | Jun | Jul | Ago | Sep | Oct | Nov | Dic |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Día | 3 (4 en bisiesto) | 28 (29 en bisiesto) | 14 (π) | 4 | 9 | 6 | 11 | 8 | 5 | 10 | 7 | 12 |
-
-Truco: 4/4, 6/6, 8/8, 10/10, 12/12 y «trabajo de **9 a 5** en el **7-Eleven**» (9/5, 5/9, 11/7, 7/11).
-
-**4. Contar:** día de la semana ≡ doomsday + (día − día ancla) (mod 7).
-""")
-
-    c1, c2, c3, c4 = st.columns(4)
-    c1.metric("Aciertos", f"{ss.aciertos}/{ss.intentos}")
-    c2.metric("Racha", ss.racha)
-    c3.metric("Mejor racha", ss.mejor_racha)
-    c4.metric("Tiempo medio", f"{sum(ss.tiempos) / len(ss.tiempos):.1f} s" if ss.tiempos else "—")
-
-    st.selectbox("Nivel", ["Fácil (año actual)", "Medio (1900–2099)", "Difícil (1800–2199)"],
-                 index=1, key="nivel", on_change=nueva_pregunta)
+    ss.setdefault("aciertos", 0)
+    ss.setdefault("intentos", 0)
     if "pregunta" not in ss:
         nueva_pregunta()
     y, m, d = ss.pregunta
+
+    st.markdown("Calcula de cabeza el día de la semana de la fecha que aparece, usando la congruencia de Zeller "
+                "(módulo 7), y pulsa tu respuesta.")
+    st.metric("Aciertos", f"{ss.aciertos}/{ss.intentos}")
     st.markdown(f"## ¿Qué día de la semana es el **{fecha_txt(y, m, d)}**?")
 
-    with st.expander("Pista"):
-        an = C.ANCLA_SIGLO[y // 100]
-        st.markdown(f"Ancla del siglo: **{C.DIAS_DOM0[an]}**. Día ancla de {C.MESES[m - 1]}: "
-                    f"**{C.ancla_mes(y, m)}**. ¿Es bisiesto? **{'sí' if C.es_bisiesto(y) else 'no'}**.")
-
+    correcto = C.zeller(y, m, d, C.GREGORIANO).valor
     if ss.respondida is None:
         cols = st.columns(7)
         for i, nombre in enumerate(["lunes", "martes", "miércoles", "jueves", "viernes", "sábado", "domingo"]):
             if cols[i].button(nombre.capitalize(), width="stretch", key=f"b{i}"):
-                correcto = C.zeller(y, m, d, C.GREGORIANO).valor
                 ss.intentos += 1
-                ss.tiempos.append(time.time() - ss.t0)
                 if nombre == correcto:
                     ss.aciertos += 1
-                    ss.racha += 1
-                    ss.mejor_racha = max(ss.mejor_racha, ss.racha)
-                else:
-                    ss.racha = 0
                 ss.respondida = nombre
                 st.rerun()
     else:
-        correcto = C.zeller(y, m, d, C.GREGORIANO).valor
         if ss.respondida == correcto:
-            st.success(f"¡Correcto! Es **{correcto}** ({ss.tiempos[-1]:.1f} s).")
+            st.success(f"¡Correcto! Es **{correcto}**.")
         else:
             st.error(f"Has dicho {ss.respondida}; es **{correcto}**.")
-        mostrar_pasos(C.doomsday(y, m, d).pasos, "Solución con el método mental")
-        st.button("Siguiente fecha ", on_click=nueva_pregunta, type="primary")
-
-    if st.button("Reiniciar marcador"):
-        for k in ("aciertos", "intentos", "racha", "mejor_racha"):
-            ss[k] = 0
-        ss.tiempos = []
-        nueva_pregunta()
-        st.rerun()
+        mostrar_pasos(C.zeller(y, m, d, C.GREGORIANO).pasos, "Solución con Zeller")
+        st.button("Siguiente fecha", on_click=nueva_pregunta, type="primary")
 
 
 def pagina_como_funciona():
@@ -515,14 +464,9 @@ $M$ y $N$ son correcciones del siglo: $k=\lfloor Y/100\rfloor$, $p=\lfloor (13+8
 $M=(15-p+k-q)\bmod 30$, $N=(4+k-q)\bmod 7$ ($M=15$, $N=6$ en el juliano).
 **Excepciones:** si $d=29,\ e=6$ → 19 de abril; si $d=28,\ e=6$ y $(11M+11)\bmod 30<19$ → 18 de abril.
 
-### 5. Método mental (Doomsday)
-Combina lo anterior: el ancla del siglo es el término de Zeller del siglo, el paso $a+b+\lfloor b/4\rfloor$ es el término $K+\lfloor K/4\rfloor$ reducido
-(usando $12 \cdot 365 + 3 \equiv 1 \pmod 7$), y las fechas ancla sustituyen al término del mes.
-
-### 6. ¿Cómo sabemos que la app no se equivoca?
+### 5. ¿Cómo sabemos que la app no se equivoca?
 El archivo `test_calendario.py` comprueba de forma automática que:
 * Zeller coincide con la librería `datetime` de Python en **todos los días** del 1-1-1583 al 31-12-2400 (más de 300 000 fechas).
-* El método mental coincide en todos los días de 1800 a 2199.
 * La Pascua de Gauss cae siempre en domingo y entre el 22-III y el 25-IV,
   y coincide con la librería `dateutil`.
 """)
