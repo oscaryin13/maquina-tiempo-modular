@@ -5,7 +5,7 @@ app.py — «Máquina del tiempo modular» (aplicación web, Opción B del Traba
 Trabajo 18 · Calendarios y aritmética modular: ¿qué día de la semana fue?
 Trabajo de aplicaciones · Temas 1 y 2 · Curso 2026–2027 · Universidad Miguel Hernández
 
-Autores:  Oscar Lidon Garcia  ·  Zhengjie Zhan
+Oscar Lidon Garcia  ·  Zhengjie Zhan
 
 Ejecutar en local:      streamlit run app.py
 Publicar con enlace:    Streamlit Community Cloud (ver README.md)
@@ -84,7 +84,9 @@ def pagina_zeller():
     st.latex(r"h \equiv q + \left\lfloor \frac{13(m+1)}{5} \right\rfloor + K + \left\lfloor \frac{K}{4} "
              r"\right\rfloor + 5 + 6J \pmod 7 \quad\text{(juliano)}")
 
-    st.markdown("""
+    c1, c2, c3 = st.columns([3, 2, 4])
+    with c1:
+        st.markdown("""
 **Variables de la fórmula**
 
 | Variable | Significado |
@@ -94,11 +96,42 @@ def pagina_zeller():
 | m | Mes |
 | K | Últimos dos dígitos del año |
 | J | Primeros dos dígitos del año |
-
-**Valores de h:** 0 = sábado, 1 = domingo, 2 = lunes, 3 = martes, 4 = miércoles, 5 = jueves, 6 = viernes.
-
-Para enero y febrero se toma m = 13 y m = 14 y se usa el año anterior para calcular K y J.
 """)
+    with c2:
+        st.markdown("""
+**Valores de h**
+
+- 0 = sábado
+- 1 = domingo
+- 2 = lunes
+- 3 = martes
+- 4 = miércoles
+- 5 = jueves
+- 6 = viernes
+""")
+    with c3:
+        st.markdown("**Valores de m**")
+        m1, m2 = st.columns(2)
+        with m1:
+            st.markdown("""
+- 3 = marzo
+- 4 = abril
+- 5 = mayo
+- 6 = junio
+- 7 = julio
+- 8 = agosto
+""")
+        with m2:
+            st.markdown("""
+- 9 = septiembre
+- 10 = octubre
+- 11 = noviembre
+- 12 = diciembre
+- 13 = enero (año anterior)
+- 14 = febrero (año anterior)
+""")
+
+
 
     ejemplos = {"(elige un ejemplo histórico)": None,
                 "Llegada de Colón a América — 12/10/1492": (1492, 10, 12),
