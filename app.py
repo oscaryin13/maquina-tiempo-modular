@@ -533,6 +533,7 @@ PAGINAS = {
 with st.sidebar:
     st.markdown("## Máquina del tiempo modular")
     st.caption("Trabajo 18 · UMH · 2026–2027")
+    st.markdown("  \n".join(AUTORES))
     st.divider()
     pagina = st.radio("Secciones", list(PAGINAS), label_visibility="collapsed")
 
